@@ -1,34 +1,26 @@
----
 name: CI
 
 on:
   pull_request:
-    branches: ["main"]
-    types: [closed, opened, synchronize, reopened]
+    branches: [ "main" ]
+    types: [ closed, opened, synchronize, reopened ]
   issue_comment:
     types: [created]
     if: contains(github.event.comment.body, 'digger')
+  workflow_dispatch:
 
 jobs:
   build:
     runs-on: ubuntu-latest
-    permissions:
-      checks: write
-      contents: read
-      id-token: write
-      pull-requests: write
 
     steps:
       - name: digger run
-        uses: diggerhq/digger@v0.1.22
+        uses: diggerhq/digger@v0.1.18
         with:
           setup-aws: true
-          aws-role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
-          aws-region: ${{ secrets.AWS_REGION }}
-          setup-terragrunt: true
-          terragrunt-version: 0.46.1
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
         env:
           GITHUB_CONTEXT: ${{ toJson(github) }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          AC_USERNAME: ${{ secrets.AC_USERNAME }}
-          AC_PASSWORD: ${{ secrets.AC_PASSWORD }}
